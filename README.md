@@ -7,5 +7,5 @@ import Http from 'simple-fetch';
 
 const http = new Http(`https://www.foo.bar`);
 http.get(`/baz?a=1`).then((data) => { console.log(data) });
-http.post(`/baz`, { first: `Chris`, last: `Hill` }).then((data) => { conosle.log(data) });
+http.post(`/baz`, { first: `Claudio`, last: `Abbado` }).then((data) => { conosle.log(data) });
 ```
