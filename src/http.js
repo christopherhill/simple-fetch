@@ -1,3 +1,6 @@
+import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only';
+import { fetch } from 'whatwg-fetch';
+
 export default class Http {
 	
 	constructor(endpoint, logging = false) {

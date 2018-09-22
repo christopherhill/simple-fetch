@@ -1,8 +1,20 @@
 {
   "name": "simple-fetch",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/http.js",
   "repository": "git@github.com:christopherhill/simple-fetch.git",
   "author": "Christopher Hill <accounts@christopherhill.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack"
+  },
+  "dependencies": {
+    "abortcontroller-polyfill": "^1.1.9",
+    "eslint": "^5.6.0",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "webpack": "^4.19.1",
+    "webpack-cli": "^3.1.0"
+  }
 }
