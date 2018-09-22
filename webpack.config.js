@@ -9,6 +9,11 @@ module.exports = {
     library: 'http',
     libraryTarget: 'umd',
   },
+  module: {
+    rules: [
+      { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
+    ]
+  },
   externals: {
     'whatwg-fetch': {
       commonjs: 'whatwg-fetch',
