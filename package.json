@@ -1,0 +1,8 @@
+{
+  "name": "simple-fetch",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:christopherhill/simple-fetch.git",
+  "author": "Christopher Hill <accounts@christopherhill.com>",
+  "license": "MIT"
+}
