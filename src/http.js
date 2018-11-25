@@ -1,28 +1,53 @@
-import { AbortController } from 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only';
-import { Headers } from 'fetch-headers';
-import { fetch } from 'whatwg-fetch';
+import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only';
+// import { Headers } from 'fetch-headers';
+import 'isomorphic-fetch';
+import { handleBlob, handleData } from "./file-download";
+
+// import 'url-search-params-polyfill';
+// import 'whatwg-fetch';
 
 export default class Http {
-  constructor(endpoint) {
+  constructor(endpoint, headers, options) {
     this.endpoint = endpoint || window.location.hostname;
-    this.headers = new Headers({ 'Content-Type': 'application/json' });
+    this.headers = new Headers(
+      { 'Content-Type': 'application/json', ...headers }
+    );
     this.defaultOptions = {
       headers: this.headers,
       mode: 'cors',
       cache: 'default',
+      ...options
     };
-    this.wrapCancelable = this.wrapCancelable.bind(this);
+    this.getCancelableOptions = this.getCancelableOptions.bind(this);
+    this.handleErr = this.handleErr.bind(this);
   }
 
-  static wrapCancelable(url, options) {
+  static checkResponse(res) {
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
+    return res;
+  }
+
+  getConfiguration() {
+    const { endpoint, headers, defaultOptions } = this;
+    return {
+      endpoint, headers, defaultOptions
+    };
+  }
+
+  handleErr(err) {
+    return Promise.reject();
+    // handle error
+  }
+
+  getCancelableOptions(options) {
     const controller = new AbortController();
     const { signal } = controller;
     const mergedOptions = this.mergeOptions(Object.assign({}, options, { signal }));
-    const result = fetch(url, mergedOptions);
-    const cancel = () => controller.abort();
     return {
-      result,
-      cancel,
+      mergedOptions,
+      controller
     };
   }
 
@@ -31,42 +56,81 @@ export default class Http {
   }
 
   get(url, options) {
-    const { result, cancel } = this.wrapCancelable(`${this.endpoint}url`, { method: 'GET', ...options });
+    const { mergedOptions, controller } = 
+      this.getCancelableOptions({ method: 'GET', ...options });
+    const result = fetch(`${this.endpoint}url`, mergedOptions);
     return {
       exec: result.then(response => response.json()),
-      cancel,
+      controller,
     };
   }
 
   post(url, body, options) {
-    const { result, cancel } = this.wrapCancelable(`${this.endpoint}url`, { method: 'POST', body: JSON.stringify(body), ...options });
+    const { mergedOptions, controller } =
+      this.getCancelableOptions(
+        { method: 'POST', body: JSON.stringify(body), ...options });
+    const result = fetch(`${this.endpoint}url`, mergedOptions);
     return {
       exec: result.then(response => response.json()),
-      cancel,
+      controller,
     };
   }
 
   patch(url, body, options) {
-    const { result, cancel } = this.wrapCancelable(`${this.endpoint}url`, { method: 'PATCH', body: JSON.stringify(body), ...options });
+    const { mergedOptions, controller } =
+      this.getCancelableOptions(
+        { method: 'PATCH', body: JSON.stringify(body), ...options });
+    const result = fetch(`${this.endpoint}url`, mergedOptions);
     return {
       exec: result.then(response => response.json()),
-      cancel,
+      controller,
     };
   }
 
   put(url, body, options) {
-    const { result, cancel } = this.wrapCancelable(`${this.endpoint}url`, { method: 'PUT', body: JSON.stringify(body), ...options });
+    const { mergedOptions, controller } =
+      this.getCancelableOptions(
+        { method: 'PUT', body: JSON.stringify(body), ...options });
+    const result = fetch(`${this.endpoint}url`, mergedOptions);
     return {
       exec: result.then(response => response.json()),
-      cancel,
+      controller,
     };
   }
 
   del(url, options) {
-    const { result, cancel } = this.wrapCancelable(`${this.endpoint}url`, { method: 'DELETE', ...options });
+    const { mergedOptions, controller } =
+      this.getCancelableOptions({ method: 'DELETE', ...options });
+    const result = fetch(`${this.endpoint}url`, mergedOptions);
     return {
       exec: result.then(response => response.json()),
-      cancel,
+      controller,
     };
+  }
+
+  multipart(url, obj, file) {
+    const body = getMultipart(obj, file);
+    const { mergedOptions, controller } = 
+      this.getCancelableOptions(
+        { method: 'POST', body, ...options });
+    const result = fetch(`${this.endpoint}url`, mergedOptions);
+    return {
+      exec: result.then(response => response.json()),
+      controller,
+    };
+  }
+
+  download(url, body, options) {
+    const { mergedOptions, controller } = 
+      this.getCancelableOptions(options);
+    const result =
+      fetch(`${this.endpoint}url`, mergedOptions)
+        .then(handleData)
+        .then(handleBlob);
+    return {
+      exec: result.then(response => response.json()),
+      controller,
+    }; 
+    
   }
 }
