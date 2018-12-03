@@ -57,6 +57,14 @@ export default class Http {
     };
   }
 
+  composeMethod(url, mergedOptions, controller) {
+    const result = this.composeFetch(url, mergedOptions);
+    return {
+      exec: result,
+      controller,
+    };
+  }
+
   getConfiguration() {
     const { endpoint, headers, defaultOptions } = this;
     return {
@@ -94,54 +102,34 @@ export default class Http {
   get(url, options) {
     const { mergedOptions, controller } = 
       this.getCancelableOptions({ method: 'GET', ...options });
-    const result = this.composeFetch(url, mergedOptions);
-    return {
-      exec: result,
-      controller,
-    };
+    return this.composeMethod(url, mergedOptions, controller);
   }
 
   post(url, body, options) {
     const { mergedOptions, controller } =
       this.getCancelableOptions(
         { method: 'POST', body: JSON.stringify(body), ...options });
-    const result = this.composeFetch(url, mergedOptions);
-    return {
-      exec: result,
-      controller,
-    };
+    return this.composeMethod(url, mergedOptions, controller);
   }
 
   patch(url, body, options) {
     const { mergedOptions, controller } =
       this.getCancelableOptions(
         { method: 'PATCH', body: JSON.stringify(body), ...options });
-    const result = this.composeFetch(url, mergedOptions);
-    return {
-      exec: result,
-      controller,
-    };
+    return this.composeMethod(url, mergedOptions, controller);
   }
 
   put(url, body, options) {
     const { mergedOptions, controller } =
       this.getCancelableOptions(
         { method: 'PUT', body: JSON.stringify(body), ...options });
-    const result = this.composeFetch(url, mergedOptions);
-    return {
-      exec: result,
-      controller,
-    };
+    return this.composeMethod(url, mergedOptions, controller);
   }
 
   del(url, options) {
     const { mergedOptions, controller } =
       this.getCancelableOptions({ method: 'DELETE', ...options });
-    const result = this.composeFetch(url, mergedOptions);
-    return {
-      exec: result,
-      controller,
-    };
+    return this.composeMethod(url, mergedOptions, controller);
   }
 
   multipart(url, obj, file) {
@@ -149,11 +137,7 @@ export default class Http {
     const { mergedOptions, controller } = 
       this.getCancelableOptions(
         { method: 'POST', body, ...options });
-    const result = this.composeFetch(url, mergedOptions);
-    return {
-      exec: result,
-      controller,
-    };
+    return this.composeMethod(url, mergedOptions, controller);
   }
 
   download(url, body, options) {
