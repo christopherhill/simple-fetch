@@ -34,6 +34,7 @@ export default class Http {
     this.put = this.put.bind(this);
     this.getCancelableOptions = this.getCancelableOptions.bind(this);
     this.handleErr = this.handleErr.bind(this);
+    this.composeFetch = this.composeFetch.bind(this);
   }
 
   // static fails
@@ -44,6 +45,18 @@ export default class Http {
     return res;
   }
 
+  composeFetch(url, mergedOptions) {
+    return async () => {
+      const data = await fetch(`${this.endpoint}${url}`, mergedOptions);
+      this.checkResponse(data);
+      const decodedJson = await this.handleJson(data);
+      return {
+        data: decodedJson,
+        raw: data
+      }
+    };
+  }
+
   getConfiguration() {
     const { endpoint, headers, defaultOptions } = this;
     return {
@@ -52,12 +65,11 @@ export default class Http {
   }
 
   handleErr(err) {
-    return Promise.reject();
-    // handle error
+    return Promise.reject(err);
   }
 
   // static fails
-  handleJson(data) {
+  async handleJson(data) {
     try {
       return data.json();
     } catch {
@@ -82,12 +94,7 @@ export default class Http {
   get(url, options) {
     const { mergedOptions, controller } = 
       this.getCancelableOptions({ method: 'GET', ...options });
-    const result = async () => {
-      console.log('HI: ',`${this.endpoint}${url}`);
-      const data = await fetch(`${this.endpoint}${url}`, mergedOptions);
-      this.checkResponse(data);
-      return this.handleJson(data);
-    };
+    const result = this.composeFetch(url, mergedOptions);
     return {
       exec: result,
       controller,
@@ -98,9 +105,9 @@ export default class Http {
     const { mergedOptions, controller } =
       this.getCancelableOptions(
         { method: 'POST', body: JSON.stringify(body), ...options });
-    const result = fetch(`${this.endpoint}url`, mergedOptions);
+    const result = this.composeFetch(url, mergedOptions);
     return {
-      exec: result.then(this.handleJson),
+      exec: result,
       controller,
     };
   }
@@ -109,9 +116,9 @@ export default class Http {
     const { mergedOptions, controller } =
       this.getCancelableOptions(
         { method: 'PATCH', body: JSON.stringify(body), ...options });
-    const result = fetch(`${this.endpoint}url`, mergedOptions);
+    const result = this.composeFetch(url, mergedOptions);
     return {
-      exec: result.then(this.handleJson),
+      exec: result,
       controller,
     };
   }
@@ -120,9 +127,9 @@ export default class Http {
     const { mergedOptions, controller } =
       this.getCancelableOptions(
         { method: 'PUT', body: JSON.stringify(body), ...options });
-    const result = fetch(`${this.endpoint}url`, mergedOptions);
+    const result = this.composeFetch(url, mergedOptions);
     return {
-      exec: result.then(this.handleJson),
+      exec: result,
       controller,
     };
   }
@@ -130,10 +137,9 @@ export default class Http {
   del(url, options) {
     const { mergedOptions, controller } =
       this.getCancelableOptions({ method: 'DELETE', ...options });
-
-    const result = fetch(`${this.endpoint}url`, mergedOptions);
+    const result = this.composeFetch(url, mergedOptions);
     return {
-      exec: result.then(this.handleJson),
+      exec: result,
       controller,
     };
   }
@@ -143,9 +149,9 @@ export default class Http {
     const { mergedOptions, controller } = 
       this.getCancelableOptions(
         { method: 'POST', body, ...options });
-    const result = fetch(`${this.endpoint}url`, mergedOptions);
+    const result = this.composeFetch(url, mergedOptions);
     return {
-      exec: result.then(this.handleJson),
+      exec: result,
       controller,
     };
   }
@@ -158,7 +164,7 @@ export default class Http {
         .then(handleData)
         .then(handleBlob);
     return {
-      exec: result.then(response => response.json()),
+      exec: result.then(this.handleJson),
       controller,
     }; 
     

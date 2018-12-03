@@ -55,14 +55,86 @@ describe('http tests', () => {
     });
 
     it('should make a GET successfully', (done) => {
-      const req = http.get('/users').exec().then((data) => {
-        expect(data).to.eql({ success: true, random: 'content' });
+      const req = http.get('/users').exec().then((res) => {
+        expect(res.raw.status).to.equal(200);
+        expect(res.data).to.eql({ success: true, random: 'content' });
         done();
       })
     })
 
     it('should cancel a GET', (done) => {
       const req = http.get('/users');
+      req.exec().then(() => {
+        expect(req.controller.signal.aborted).to.equal(false);
+        req.controller.abort();
+        expect(req.controller.signal.aborted).to.equal(true);
+        done();
+      });
+    });
+
+    it('should make a POST successfully', (done) => {
+      const req = http.post('/users').exec().then((res) => {
+        expect(res.raw.status).to.equal(200);
+        expect(res.data).to.eql({ success: true, random: 'content' });
+        done();
+      })
+    })
+
+    it('should cancel a POST', (done) => {
+      const req = http.post('/users');
+      req.exec().then(() => {
+        expect(req.controller.signal.aborted).to.equal(false);
+        req.controller.abort();
+        expect(req.controller.signal.aborted).to.equal(true);
+        done();
+      });
+    })
+
+    it('should make a PUT successfully', (done) => {
+      const req = http.put('/users').exec().then((res) => {
+        expect(res.raw.status).to.equal(200);
+        expect(res.data).to.eql({ success: true, random: 'content' });
+        done();
+      })
+    })
+
+    it('should cancel a PUT', (done) => {
+      const req = http.put('/users');
+      req.exec().then(() => {
+        expect(req.controller.signal.aborted).to.equal(false);
+        req.controller.abort();
+        expect(req.controller.signal.aborted).to.equal(true);
+        done();
+      });
+    })
+
+    it('should make a PATCH successfully', (done) => {
+      const req = http.patch('/users').exec().then((res) => {
+        expect(res.raw.status).to.equal(200);
+        expect(res.data).to.eql({ success: true, random: 'content' });
+        done();
+      })
+    })
+
+    it('should cancel a PATCH', (done) => {
+      const req = http.patch('/users');
+      req.exec().then(() => {
+        expect(req.controller.signal.aborted).to.equal(false);
+        req.controller.abort();
+        expect(req.controller.signal.aborted).to.equal(true);
+        done();
+      });
+    })
+
+    it('should make a DELETE successfully', (done) => {
+      const req = http.del('/users').exec().then((res) => {
+        expect(res.raw.status).to.equal(200);
+        done();
+      })
+    })
+
+    it('should cancel a DELETE', (done) => {
+      const req = http.del('/users');
       req.exec().then(() => {
         expect(req.controller.signal.aborted).to.equal(false);
         req.controller.abort();
