@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "abortcontroller-polyfill": "^1.1.9",
+    "babel-plugin-syntax-async-functions": "^6.13.0",
+    "babel-polyfill": "^6.26.0",
     "fetch-headers": "^2.0.0",
     "isomorphic-fetch": "^2.2.1",
     "url-search-params-polyfill": "^5.0.0",
@@ -20,6 +22,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.1.0",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.2",

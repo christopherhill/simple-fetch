@@ -7,14 +7,14 @@ import Http from './../src/http';
 
 chai.use(spies);
 
-nodeHttp.createServer(mockserver('./../server/get.mock')).listen(9001);
+nodeHttp.createServer(mockserver('./server')).listen(9001);
 
 describe('http tests', () => {
 
     let http;
 
     beforeEach(() => {
-      http = new Http('//localhost:9001', { 'Authorization': 'Bearer 1234' });
+      http = new Http('http://localhost:9001', { 'Authorization': 'Bearer 1234' });
     });
 
     it('should have some default headers set', () => {
@@ -39,22 +39,36 @@ describe('http tests', () => {
     })
 
     it('should have the endpoint that was set initially', () => {
-      expect(http.getConfiguration().endpoint).to.equal('//localhost:9001');
+      expect(http.getConfiguration().endpoint).to.equal('http://localhost:9001');
     })
 
-    it('should make a GET successfully', () => {
-      const req = http.get('get').exec.then((data) => {
-        expect(data).to.equal({ success: true, random: 'content' });
+    it('should strip a trailing slash if necessary from the endpoint', () => {
+      global.window = { location: { origin: 'http://www.someurl.com/' }};
+      let http = new Http(null, { 'Authorization': 'Bearer 1234' });
+      expect(http.getConfiguration().endpoint).to.equal('http://www.someurl.com');
+    })
+
+    it('should use the current window.location.origin if no endpoint is supplied', () => {
+      global.window = { location: { origin: 'http://www.someurl.com' }};
+      let http = new Http(null, { 'Authorization': 'Bearer 1234' });
+      expect(http.getConfiguration().endpoint).to.equal('http://www.someurl.com');
+    });
+
+    it('should make a GET successfully', (done) => {
+      const req = http.get('/users').exec().then((data) => {
+        expect(data).to.eql({ success: true, random: 'content' });
+        done();
       })
     })
 
-    it('should cancel a GET', () => {
-      const req = http.get('get');
-      req.exec;
-      expect(req.controller.signal.aborted).to.equal(false);
-      req.controller.abort();
-      expect(req.controller.signal.aborted).to.equal(true);
+    it('should cancel a GET', (done) => {
+      const req = http.get('/users');
+      req.exec().then(() => {
+        expect(req.controller.signal.aborted).to.equal(false);
+        req.controller.abort();
+        expect(req.controller.signal.aborted).to.equal(true);
+        done();
+      });
     })
 
-    
 })
