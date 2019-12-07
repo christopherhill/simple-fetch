@@ -5,9 +5,23 @@
     "func-names": [
       "error",
       "never"
-    ]
+    ],
+    "semi": ["error", "never"],
+    "lines-between-class-members": 0
   },
   "env": {
     "browser": true
-  }
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion":  2018,
+    "sourceType":  "module"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
 }

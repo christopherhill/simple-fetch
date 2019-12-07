@@ -1,8 +1,8 @@
-var path = require('path');
+const path = require('path')
 
 module.exports = {
   mode: 'development',
-  entry: ['./src/index.js'],
+  entry: ['./src/index.ts'],
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'http.js',
@@ -11,15 +11,18 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
-    ]
+      { test: /\.ts?$/, exclude: /node_modules/, use: 'ts-loader' },
+    ],
+  },
+  resolve: {
+    extensions: ['.ts', '.js', '.json'],
   },
   externals: {
     'whatwg-fetch': {
       commonjs: 'whatwg-fetch',
       commonjs2: 'whatwg-fetch',
       amd: 'whatwg-fetch',
-      root: 'whatwg-fetch'
-    }
-  }
-};
+      root: 'whatwg-fetch',
+    },
+  },
+}
