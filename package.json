@@ -16,7 +16,7 @@
     "@typescript-eslint/parser": "^2.10.0",
     "abortcontroller-polyfill": "^1.1.9",
     "fetch-headers": "^2.0.0",
-    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "url-search-params-polyfill": "^5.0.0",
     "whatwg-fetch": "^3.0.0"
   },
