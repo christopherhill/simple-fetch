@@ -1,3 +1,7 @@
+# SimpleFetch v3
+
+A lightweight React Hook for REST-ful API resources using fetch. Supports cancelable requests with configurable endpoints.
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
